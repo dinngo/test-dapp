@@ -1528,32 +1528,73 @@ const initialize = async () => {
     const chainId = parseInt(chainIdDiv.innerHTML, 16) || networkId;
     const msgParams = {
       domain: {
-        chainId: chainId.toString(),
-        name: 'Ether Mail',
-        verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
+        name: 'Composable Router',
         version: '1',
+        chainId: chainId.toString(),
+        verifyingContract: '0x712BcCD6b7f8f5c3faE0418AC917f8929b371804',
       },
       message: {
-        contents: 'Hello, Bob!',
-        from: {
-          name: 'Cow',
-          wallets: [
-            '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
-            '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF',
-          ],
-        },
-        to: [
+        // logics[0] = logics[1]
+        logics: [
           {
-            name: 'Bob',
-            wallets: [
-              '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-              '0xB0BdaBea57B0BDABeA57b0bdABEA57b0BDabEa57',
-              '0xB0B0b0b0b0b0B000000000000000000000000000',
+            to: '0x0000000000000000000000000000000000000003',
+            data: '0123456789abcdef',
+            inputs: [
+              {
+                token: '0x0000000000000000000000000000000000000001',
+                balanceBps:
+                  '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', // type(uint256).max
+                amountOrOffset: 1,
+              },
+              {
+                token: '0x0000000000000000000000000000000000000002',
+                balanceBps: 10000,
+                amountOrOffset: 0x20,
+              },
             ],
+            wrapMode: 1, // WRAP_BEFORE
+            approveTo: '0x0000000000000000000000000000000000000004',
+            callback: '0x0000000000000000000000000000000000000005',
+          },
+          {
+            to: '0x0000000000000000000000000000000000000003',
+            data: '0123456789abcdef',
+            inputs: [
+              {
+                token: '0x0000000000000000000000000000000000000001',
+                balanceBps:
+                  '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', // type(uint256).max
+                amountOrOffset: 1,
+              },
+              {
+                token: '0x0000000000000000000000000000000000000002',
+                balanceBps: 10000,
+                amountOrOffset: 0x20,
+              },
+            ],
+            wrapMode: 1, // WRAP_BEFORE
+            approveTo: '0x0000000000000000000000000000000000000004',
+            callback: '0x0000000000000000000000000000000000000005',
           },
         ],
+        // fees[0] = fees[1]
+        fees: [
+          {
+            token: '0x0000000000000000000000000000000000000006',
+            amount: 1,
+            metadata:
+              '0x6d65746164617461000000000000000000000000000000000000000000000000', // encoded 'metadata' string
+          },
+          {
+            token: '0x0000000000000000000000000000000000000006',
+            amount: 1,
+            metadata:
+              '0x6d65746164617461000000000000000000000000000000000000000000000000', // encoded 'metadata' string
+          },
+        ],
+        deadline: 1704067200,
       },
-      primaryType: 'Mail',
+      primaryType: 'LogicBatch',
       types: {
         EIP712Domain: [
           { name: 'name', type: 'string' },
@@ -1561,18 +1602,28 @@ const initialize = async () => {
           { name: 'chainId', type: 'uint256' },
           { name: 'verifyingContract', type: 'address' },
         ],
-        Group: [
-          { name: 'name', type: 'string' },
-          { name: 'members', type: 'Person[]' },
+        LogicBatch: [
+          { name: 'logics', type: 'Logic[]' },
+          { name: 'fees', type: 'Fee[]' },
+          { name: 'deadline', type: 'uint256' },
         ],
-        Mail: [
-          { name: 'from', type: 'Person' },
-          { name: 'to', type: 'Person[]' },
-          { name: 'contents', type: 'string' },
+        Logic: [
+          { name: 'to', type: 'address' },
+          { name: 'data', type: 'bytes' },
+          { name: 'inputs', type: 'Input[]' },
+          { name: 'wrapMode', type: 'uint8' },
+          { name: 'approveTo', type: 'address' },
+          { name: 'callback', type: 'address' },
         ],
-        Person: [
-          { name: 'name', type: 'string' },
-          { name: 'wallets', type: 'address[]' },
+        Input: [
+          { name: 'token', type: 'address' },
+          { name: 'balanceBps', type: 'uint256' },
+          { name: 'amountOrOffset', type: 'uint256' },
+        ],
+        Fee: [
+          { name: 'token', type: 'address' },
+          { name: 'amount', type: 'uint256' },
+          { name: 'metadata', type: 'bytes32' },
         ],
       },
     };
