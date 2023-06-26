@@ -1528,7 +1528,7 @@ const initialize = async () => {
     const chainId = parseInt(chainIdDiv.innerHTML, 16) || networkId;
     const msgParams = {
       domain: {
-        name: 'Composable Router',
+        name: 'Protocolink',
         version: '1',
         chainId: chainId.toString(),
         verifyingContract: '0x712BcCD6b7f8f5c3faE0418AC917f8929b371804',
